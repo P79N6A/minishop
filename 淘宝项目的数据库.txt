@@ -1,0 +1,150 @@
+use master
+create database product
+go
+use product
+go
+create table users(
+	s_id int primary key identity,
+	s_name varchar(15),--用户账号
+	s_password varchar(30)--用户密码
+)
+--用户信息表
+create table users_info(
+	u_id int identity primary key ,--用户id
+	u_name varchar(30),--姓名
+	u_sex varchar(2) check(u_sex='男' or u_sex='女'),--性别
+	u_age int , --年龄
+	u_phone varchar(15),--电话号码
+	u_address varchar(255),--地址
+	s_id int, --登录id
+	foreign key(s_id) references users(s_id) --外键
+)
+--商品类型表
+create table Protype(
+	t_id int identity primary key, --商品类型id
+	t_type varchar(20) --商品类型名称
+)
+ --商品信息表
+ create table product_info(
+	p_id int identity primary key,
+	p_name varchar(255) ,--商品名称
+	p_price money, --商品价格
+	p_count int,--商品数量
+		
+	t_id int ,--商品类型id
+	foreign key (t_id) references Protype(t_id)
+ )
+ select a.p_id,a.p_price,a.p_name,b.p_address from product_info a left join pictrue b on a.p_id=b.p_id left join Protype c on c.t_id=a.t_id where a.p_id ='5'
+ --商品图片信息表
+ create table pictrue(
+	pi_id int primary key,
+	p_address varchar(50),--商品图片地址
+	p_id int ,--商品编号
+	foreign key(p_id) references product_info(p_id)
+ )
+ select *from pictrue
+ --订单表（购物车要显示的信息）
+ create table Order_info(
+	o_id int identity primary key,
+	title varchar(200),--商品标题
+	num int,--商品购买数量 
+	price money,--商品价格
+	total money ,--商品总价
+	statues bit ,--购买状态，0表示已购买，1表示未购买
+	u_id int ,--用户id号
+	p_id int ,--商品id号
+	pi_id int,
+	foreign key(u_id) references users_info(u_id),
+	foreign key(p_id) references product_info(p_id),
+	foreign key(pi_id) references pictrue(pi_id)
+ )
+ --添加订单
+ --查出订单的数据
+ select a.title,a.num,a.price,a.total,a.statues,b.u_phone,b.u_address,c.p_name,d.p_address from
+ Order_info a left join users_info b on a.u_id=b.u_id left join product_info c on a.p_id=c.p_id left join pictrue d on a.pi_id=d.pi_id where a.p_id='1'
+--查出订单的购买状态 
+ select a.title,a.num,a.price,a.total,a.statues,b.u_phone,b.u_address,c.p_name,d.p_address from
+ Order_info a left join users_info b on a.u_id=b.u_id left join product_info c on a.p_id=c.p_id left join pictrue d on a.pi_id=d.pi_id where statues=0
+
+ go
+ --登录的测试账号
+ insert users values('13192220767','12345')
+ insert users values('15014271839','12345')
+ go
+ --测试用户的信息
+ insert  users_info values('admin','男',18,'13192220767','广东南方IT学院',1)
+  insert  users_info values('zhangsna','男',18,'15014271839','广东南方IT学院',2)
+  delete from users_info where u_name='zhangsna'
+ 
+ --DBCC CHECKIDENT(users_info,RESEED,1)--删除自动增长标识列的值，从1开始
+ --DBCC CHECKIDENT(users,NORESEED)--查询当前标识列的值
+ go
+ --商品类型表
+ insert Protype values('数码家电')
+ insert Protype values('小吃食品')
+ insert Protype values('生活用品')
+ insert Protype values('服装会场')
+
+select * from users
+select * from Protype
+select * from users_info
+select * from Order_info
+
+--数码家电
+insert product_info values('Apple/苹果 MacBook Air MQD32CH/A 11 13寸 超薄笔记本电脑',3488,200,1)
+insert product_info values('Apple/苹果 MacBook Air MQD32CH/A VM2 11 13寸超薄款笔记本电脑',3588,210,1)
+insert product_info values('Apple/苹果 MacBook Air MQD32CH/A 11 13寸超薄手提笔记本电脑',3688,210,1)
+insert product_info values('Apple/苹果 MacBook Air MQD32CH/A MJVE2超薄办公13寸笔记本电脑',3788,210,1)
+
+
+--数码家电图片
+insert pictrue values(1,'images/a.jpg',1)
+insert pictrue values(2,'images/b.jpg',2)
+insert pictrue values(3,'images/c.jpg',3)
+insert pictrue values(4,'images/d.jpg',4)
+
+
+--小吃食品
+insert product_info values('待见大红枣408g新货山西特产农家鸡蛋大即食壶瓶骏枣红枣王',36,300,2)
+insert product_info values('沈师傅鸡蛋干豆干 营养美味酱香浓郁 鸡蛋清味道',3,300,2)
+insert product_info values('四川特产麻辣猪脆骨零食小吃休闲香辣猪软骨8090后怀旧熟食品108g',17,300,2)
+insert product_info values('网红零食日本诺贝尔NOBEL男梅糖袋装80g 梅干味浓厚含盐糖果零食',16,300,2)
+
+
+--小吃食品图片
+insert pictrue values(5,'images/xca.jpg',5)
+insert pictrue values(6,'images/xcb.jpg',6)
+insert pictrue values(7,'images/xcc.jpg',7)
+insert pictrue values(8,'images/xcd.jpg',8)
+
+--生活用品
+insert product_info values('抖音同款神器家庭创意日常居家生活日用品实用卫生间用具家用百货',22,200,3)
+insert product_info values('卫生间浴室家居用品用具抖音热门同款神器实用日常生活家用小百货',40,200,3)
+insert product_info values('家用小东西生活用品百货懒人家居用品居家日用品大学寝室宿舍神器',39,200,3)
+insert product_info values('实用创意装饰品生活卧室家用日用品房间神器学生百货居家家居用品',12,200,3)
+
+--生活用品图片
+insert pictrue values(9,'images/sha.jpg',9)
+insert pictrue values(10,'images/shb.jpg',10)
+insert pictrue values(11,'images/shc.jpg',11)
+insert pictrue values(12,'images/shd.jpg',12)
+
+
+--服装会场
+insert product_info values('Reshake华菲型格2018夏新品男士纯棉宽松印花潮流休闲短袖T恤',139,200,4)
+insert product_info values('原创潮牌2018夏装中国小红卫兵贴布纯棉短袖T恤男装上衣情侣青年',95,200,4)
+insert product_info values(' B1DA82306太平鸟男装2018夏男士t恤短袖圆领黑白条纹纯棉百搭宽松',212,200,4)
+insert product_info values('分享瞌睡兔雪纺温柔风小个子a字吊带裙子sukol复古连衣裙女夏2018新款',99,200,4)
+
+
+--服装会场图片
+insert pictrue values(13,'images/fza.jpg',13)
+insert pictrue values(14,'images/fzb.jpg',14)
+insert pictrue values(15,'images/fzc.jpg',15)
+insert pictrue values(16,'images/fzd.jpg',16)
+
+
+
+
+ 
+ 
